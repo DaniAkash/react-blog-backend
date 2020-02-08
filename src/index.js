@@ -5,10 +5,12 @@ const bodyParser = require("body-parser");
 const authorsRouter = require("./routers/authorsRouter");
 const postsRouter = require("./routers/postsRouter");
 const adminRouter = require("./routers/adminRouter");
+const cookieParser = require('cookie-parser')
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(cors());
 
 app.get("/", (req, res) => {
