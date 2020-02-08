@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const authorsRouter = require("./routers/authorsRouter");
 const postsRouter = require("./routers/postsRouter");
+const adminRouter = require("./routers/adminRouter");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 
 app.use("/posts", postsRouter);
 app.use("/authors", authorsRouter);
+app.use("/admin", adminRouter);
 
 const server = app.listen(8080, () => {
   console.log("Server running on port: " + server.address().port);
