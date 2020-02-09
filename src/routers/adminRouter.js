@@ -1,6 +1,6 @@
 const express = require("express");
 const Admin = require("../models/admin");
-const { adminTokenGenerator } = require("../utils/adminTokenManager");
+const { adminTokenGenerator, adminTokenValidator } = require("../utils/adminTokenManager");
 const { compareHash } = require("../utils/hash");
 
 const adminRouter = express.Router();
@@ -15,8 +15,15 @@ adminRouter.post("/login", (req, res) => {
         .then(result => {
           if (result) {
             const jwtToken = adminTokenGenerator({ email });
-            res.cookie("jwt", jwtToken, { httpOnly: true });
-            res.status(200).send({ status: "Success" });
+            res.cookie("jwt", jwtToken);
+            /**
+             * Since frontend & backend are on
+             * different domains cookie can't be set
+             */
+            res.status(200).send({ 
+              status: "Success",
+              jwtToken
+            });
           } else {
             res.status(400).send("Invalid Request");
           }
@@ -33,6 +40,17 @@ adminRouter.post("/login", (req, res) => {
       console.error(error);
       res.status(500).send("Internal Server Error");
     });
+});
+
+adminRouter.get("/isLoggedIn", (req, res) => {
+  // const { jwt = "" } = req.cookies; // use this if using cookies
+  const jwt = req.header('Authorization');
+
+  if(adminTokenValidator(jwt)) {
+    res.status(200).json({message: "logged in"})
+  } else {
+    res.status(401).send("unauthorized");
+  }
 });
 
 module.exports = adminRouter;
